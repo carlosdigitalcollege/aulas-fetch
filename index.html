@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form id="form">
+    <h3>Cadastro de nomes</h3>
+    <label>
+      Nome
+      <input id="input" type="text" name="name" />
+    </label>
+    <button>Salvar</button>
+  </form>
+
+  <div id="users"></div>
+  
+
+  <script>
+    const userAPIUrl = 'https://630a1ec8324991003280d537.mockapi.io/api/v2/user'
+
+    const loadUserList = () => {
+      const handleData = (users) => {
+        const userListElement = document.querySelector('#users')
+        const userNames = users.map(user => `<p>${user.name}</p>`)
+        userListElement.innerHTML = userNames.join('')
+      }
+
+      fetch(userAPIUrl).then((response) => {
+        response.json().then(handleData)
+      })
+    }
+
+    const createUser = (name) => {
+      const newUser = { name: name }
+      // const newUser = { name }
+
+      fetch(userAPIUrl, {
+        method: 'POST',
+        body: JSON.stringify(newUser),
+        headers: {'Content-type': 'application/json; charset=UTF-8'}
+      }).then(() => {
+        loadUserList()
+      })
+    }
+
+    loadUserList()
+
+    const formElement = document.querySelector('#form')
+    const inputElement = document.querySelector('#input')
+    formElement.addEventListener('submit', (event) => {
+      event.preventDefault()
+
+      createUser(inputElement.value)
+    })
+  </script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    form {
+      border: 1px solid black;
+      padding: 50px;
+      border-radius: 8px;
+    }
+  </style>
+</body>
+</html>
