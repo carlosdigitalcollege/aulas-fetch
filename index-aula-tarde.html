@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="register-form">
+        <h3>Cadastro de usuário</h3>
+        <label>
+            <p>Nome</p>
+            <input id="name-input" type="text" name="name" placeholder="digite aqui o nome..."/>
+        </label>
+        <button>Enviar</button>
+    </form>
+    <div id="users"></div>
+    
+    <script>  
+        const loadData = (url, callback) => {
+            fetch(url).then((response) => {
+                response.json().then((data) => {
+                    callback(data)
+                })
+            })
+        }
+
+        const postData = (url, data, callback) => {
+            const fetchOptions = {
+                method: 'POST',
+                headers: {'Content-type': 'application/json; charset=UTF-8'},
+                body: JSON.stringify(data),
+            }
+
+            fetch(url, fetchOptions).then(() => {
+                callback()
+            })
+        }
+
+        const usersApiUrl = 'https://630a1ec8324991003280d537.mockapi.io/api/v2/users'
+        const userListElement = document.querySelector('#users')
+
+        const fetchUsers = () => {
+            loadData(usersApiUrl, (users) => {
+                const userNames = users.map(user => `<p>${user.name}</p>`)
+                userListElement.innerHTML = userNames.join('')
+                console.log(users)
+            })
+        } 
+
+
+        const registerFormElement = document.querySelector('#register-form')
+        const nameInputElement = document.querySelector('#name-input')
+
+        registerFormElement.addEventListener('submit', (event) => {
+            event.preventDefault()
+            const userData = { name: nameInputElement.value }
+            postData(usersApiUrl, userData, () => {
+                fetchUsers()
+                nameInputElement.value = ''
+            })
+        })
+
+        fetchUsers()
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        form {
+            border: 2px solid black;
+            border-radius: 8px;
+            padding: 30px;
+        }
+    </style>
+</body>
+</html>
